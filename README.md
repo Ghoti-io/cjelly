@@ -66,8 +66,8 @@ not link a device.
 ## Building the library
 
 [cutil](https://github.com/Ghoti-io/cutil),
-[image](https://github.com/coreyp1/image) and
-[model](https://github.com/coreyp1/model) must already be installed where
+[image](https://github.com/Ghoti-io/image) and
+[model](https://github.com/Ghoti-io/model) must already be installed where
 pkg-config can see them. A dependency it cannot find is a hard error naming
 the fix.
 
@@ -116,8 +116,8 @@ All three are found through pkg-config, and the installed `.pc` file names
 them, so a program that links `ghoti.io-cjelly-0` links these too.
 
 - [ghoti.io-cutil](https://github.com/Ghoti-io/cutil) — the handle map and the allocator.
-- [ghoti.io-image](https://github.com/coreyp1/image) — every image the toolkit loads.
-- [ghoti.io-model](https://github.com/coreyp1/model) — OBJ and MTL for the model node.
+- [ghoti.io-image](https://github.com/Ghoti-io/image) — every image the toolkit loads.
+- [ghoti.io-model](https://github.com/Ghoti-io/model) — OBJ and MTL for the model node.
 
 ## Documentation
 
