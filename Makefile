@@ -613,7 +613,6 @@ $(GEN_DIR)/shaders/%.h: $(APP_DIR)/shaders/%.spv
 # a shader header depended on whether the tool had been installed.
 #
 # A missing build tool is the easiest thing in the world to report accurately.
-# See notes/suite/WINDOWS-TODO.md item 3.
 $(APP_DIR)/shaders/%.spv: src/shaders/%
 	@printf "\n### Compiling $@ ###\n"
 	@mkdir -p $(@D)

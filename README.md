@@ -77,10 +77,10 @@ make test
 sudo make install
 ```
 
-From the workspace, which installs the three libraries first:
+From the parent of a suite checkout, which installs cutil, image, and model first:
 
 ```bash
-./bootstrap.sh
+./suite/install.sh
 export PKG_CONFIG_PATH="$PWD/.local/share/pkgconfig"
 make -C libs/cjelly test PREFIX="$PWD/.local"
 ```
