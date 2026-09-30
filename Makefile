@@ -494,6 +494,27 @@ DEPFILES := $(LIBOBJECTS:.o=.d)
 ####################################################################
 
 LIBVER_GEN := $(GEN_DIR)/ghoti.io/cjelly/libver_gen.h
+# EVERY rule that compiles a translation unit carries `| $(LIBVER_GEN)`, not
+# just the release library's. Each one reaches this generated header -
+# macros.h includes namespace.h includes libver.h includes libver_gen.h - so
+# a rule without it works only on a tree where something else already
+# generated the file. That is the worst shape a build defect takes: it passes
+# for everyone who has built before and fails for everyone who has not, and
+# under -j it is a race rather than a clean failure.
+#
+# CONVENTIONS.md section 6 states the rule and section 12 warns that copying
+# a Makefile copies its defects. This is that: the release C rule and the
+# ASan rule had it and the fuzz rule did not. From a clean tree, asking for
+# a single fuzz object failed outright:
+#
+#     include/ghoti.io/cjelly/libver.h:33:10: fatal error:
+#     'ghoti.io/cjelly/libver_gen.h' file not found
+#
+# Not every source shows it - src/allocator.c reaches no header that reaches
+# this one, so a probe that happens to pick it reports a clean build. The
+# release C++ rule is corrected for the same reason even though src/ holds
+# no .cpp file today, so the trap is not left armed for whoever adds the
+# first one.
 
 # libver_gen.h is regenerated on every build and rewritten only when its content
 # changes, so a variable given on the command line - make MAJOR_VERSION=2, or
@@ -533,7 +554,7 @@ $(OBJ_DIR)/%.o: src/%.c $(FLAGS_STAMP) | $(LIBVER_GEN)
 	$(CC) $(LIB_CFLAGS) $(INCLUDE) -c $< -MMD -MP -MF $(@:.o=.d) -o $@
 
 # Pattern rule for C++ source files (if any):
-$(OBJ_DIR)/%.o: src/%.cpp $(FLAGS_STAMP)
+$(OBJ_DIR)/%.o: src/%.cpp $(FLAGS_STAMP) | $(LIBVER_GEN)
 	@printf "\n### Compiling $@ ###\n"
 	@mkdir -p $(@D)
 	$(CXX) $(CXXFLAGS) $(INCLUDE) -c $< -MMD -MP -MF $(@:.o=.d) -o $@
@@ -1144,7 +1165,7 @@ FUZZ_TIME ?= 60
 
 $(FUZZ_OBJECTS): | $(LIBVER_GEN)
 
-$(FUZZ_OBJ_DIR)/%.o: src/%.c $(FUZZ_FLAGS_STAMP)
+$(FUZZ_OBJ_DIR)/%.o: src/%.c $(FUZZ_FLAGS_STAMP) | $(LIBVER_GEN)
 	@mkdir -p $(@D)
 	@$(FUZZ_CC) $(FUZZ_LIB_FLAGS) -std=c17 -w -DCJELLY_BUILD $(INCLUDE) -c $< -o $@
 
