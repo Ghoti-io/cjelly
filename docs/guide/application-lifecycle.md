@@ -122,7 +122,7 @@ cj_window_on_close(window, my_close_callback, user_data);
 cj_window_on_resize(window, my_resize_callback, user_data);
 ```
 
-See [Input Events](events.md) and [Windowing System](windowing.md) for details on callback usage.
+See [Input Events](@ref cjelly_events) and [Windowing System](@ref cjelly_windowing) for details on callback usage.
 
 ### 6. Register Signal Handlers
 
@@ -132,7 +132,7 @@ Register signal handlers for graceful shutdown (Ctrl+C, SIGTERM, etc.):
 cjelly_application_register_signal_handlers(app);
 ```
 
-**Important:** Signal handlers only set a shutdown flag. The main loop checks this flag and exits gracefully. Window cleanup happens in the main thread after the loop exits. See [Engine Architecture](engine.md) for details.
+**Important:** Signal handlers only set a shutdown flag. The main loop checks this flag and exits gracefully. Window cleanup happens in the main thread after the loop exits. See [Engine Architecture](@ref cjelly_engine) for details.
 
 ### 7. Run the Event Loop
 
@@ -156,7 +156,7 @@ The event loop continues until:
 - A signal handler sets the shutdown flag
 - All windows are minimized (if `run_when_minimized = false`)
 
-See [Event Loop System](event-loops.md) for detailed configuration options.
+See [Event Loop System](@ref cjelly_loops) for detailed configuration options.
 
 ### 8. Cleanup
 
@@ -299,7 +299,7 @@ Windows can be closed in several ways:
 2. **Frame callback returns `CJ_FRAME_CLOSE_WINDOW`**: Window is closed
 3. **Application calls `cj_window_destroy()`**: Window is immediately destroyed
 
-See [Windowing System](windowing.md) for details on close callbacks.
+See [Windowing System](@ref cjelly_windowing) for details on close callbacks.
 
 ## Error Handling
 

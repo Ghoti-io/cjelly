@@ -72,8 +72,10 @@ typedef enum cj_native_tag_t {
   CJ_NATIVE_COCOA,
 } cj_native_tag_t;
 
+/** Native surface descriptor: a tag selecting which member of the union is valid. */
 typedef struct cj_native_surface_desc_t {
-  cj_native_tag_t tag;
+  cj_native_tag_t tag; /**< Which member of @ref u is in use. */
+  /** Platform-specific surface handles; read the member that matches @ref tag. */
   union {
     cj_native_win32_t   win32;
     cj_native_x11_t     x11;

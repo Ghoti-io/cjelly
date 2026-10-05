@@ -19,7 +19,7 @@ CJelly provides a callback-based input system that delivers platform-independent
 
 ## Event Processing
 
-Input events are processed during the event loop's event polling phase (see [Event Loop System](event-loops.md)). Events are handled immediately with no queuing:
+Input events are processed during the event loop's event polling phase (see [Event Loop System](@ref cjelly_loops)). Events are handled immediately with no queuing:
 
 1. **Platform events are polled** from the OS
 2. **Events are translated** to platform-independent formats

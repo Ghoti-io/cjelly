@@ -109,9 +109,9 @@ CJ_API uint32_t cj_engine_device_index(const cj_engine_t* engine);
 
 /** Global descriptor slot counts (bindless). */
 typedef struct cj_bindless_info_t {
-  uint32_t images_capacity;
-  uint32_t buffers_capacity;
-  uint32_t samplers_capacity;
+  uint32_t images_capacity;   /**< Number of image descriptor slots. */
+  uint32_t buffers_capacity;  /**< Number of buffer descriptor slots. */
+  uint32_t samplers_capacity; /**< Number of sampler descriptor slots. */
 } cj_bindless_info_t;
 
 /** Query bindless resource capacities.

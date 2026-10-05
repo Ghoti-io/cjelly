@@ -62,8 +62,8 @@ typedef enum cj_window_state_t {
 
 /** Window creation descriptor (platform-agnostic). */
 typedef struct cj_window_desc_t {
-  uint32_t width;
-  uint32_t height;
+  uint32_t width;                 /**< Initial width in pixels. */
+  uint32_t height;                /**< Initial height in pixels. */
   cj_str_t title;                 /**< Optional; UTF-8. */
 
   int32_t x;                      /**< Initial X position (screen coordinates). Use CJ_WINDOW_POSITION_DEFAULT to let platform choose. */

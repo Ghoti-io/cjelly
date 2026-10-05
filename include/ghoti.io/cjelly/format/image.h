@@ -32,7 +32,7 @@ extern "C" {
 #endif /* __cplusplus */
 
 /**
- * @file cjelly_format_image.h
+ * @file image.h
  * @brief Generic image structure and loader interface for the CJelly library.
  */
 

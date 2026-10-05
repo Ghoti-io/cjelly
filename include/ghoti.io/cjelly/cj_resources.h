@@ -86,33 +86,35 @@ typedef enum cj_sampler_address_t {
 
 /** Texture descriptor. */
 typedef struct cj_texture_desc_t {
-  uint32_t width, height, layers;
-  uint32_t mips;
-  cj_format_t format;
+  uint32_t width;    /**< Width in texels. */
+  uint32_t height;   /**< Height in texels. */
+  uint32_t layers;   /**< Number of array layers. */
+  uint32_t mips;     /**< Number of mip levels. */
+  cj_format_t format;/**< Texel format. */
   uint32_t usage;    /**< OR of cj_image_usage_t. */
   bool     cube;     /**< Treat layers=6 as cubemap if true. */
   bool     transient;/**< Swapchain-dependent or temp (hint). */
-  cj_str_t debug_name;
+  cj_str_t debug_name; /**< Optional name for debugging tools. */
 } cj_texture_desc_t;
 
 /** Buffer descriptor. */
 typedef struct cj_buffer_desc_t {
-  uint64_t size;
+  uint64_t size;      /**< Size in bytes. */
   uint32_t usage;     /**< OR of cj_buffer_usage_t. */
-  bool     host_visible;
-  cj_str_t debug_name;
+  bool     host_visible; /**< Whether the buffer is host-visible (CPU-mappable). */
+  cj_str_t debug_name; /**< Optional name for debugging tools. */
 } cj_buffer_desc_t;
 
 /** Sampler descriptor (cached; identical descriptors dedup). */
 typedef struct cj_sampler_desc_t {
-  cj_sampler_filter_t min_filter;
-  cj_sampler_filter_t mag_filter;
-  cj_sampler_address_t address_u;
-  cj_sampler_address_t address_v;
-  cj_sampler_address_t address_w;
-  float mip_lod_bias;
+  cj_sampler_filter_t min_filter;  /**< Minification filter. */
+  cj_sampler_filter_t mag_filter;  /**< Magnification filter. */
+  cj_sampler_address_t address_u;  /**< Addressing mode for the U coordinate. */
+  cj_sampler_address_t address_v;  /**< Addressing mode for the V coordinate. */
+  cj_sampler_address_t address_w;  /**< Addressing mode for the W coordinate. */
+  float mip_lod_bias;             /**< Bias added to the computed mip level of detail. */
   float max_anisotropy;   /**< 0 = disabled. */
-  cj_str_t debug_name;
+  cj_str_t debug_name;    /**< Optional name for debugging tools. */
 } cj_sampler_desc_t;
 
 /** Create, retain, release, and descriptor slot queries. */

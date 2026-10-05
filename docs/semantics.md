@@ -153,7 +153,7 @@ is in the DOM and absent from the accessibility tree. `aria-hidden` is in the
 DOM and in layout, and absent from the accessibility tree. `role="presentation"`
 erases an element's semantics while keeping its children. A `<video>` is one
 element and becomes a whole cluster of accessible controls. And CSS generated
-content - `::before` and `::after` - is in no DOM at all, yet it *is* in the
+content - `::%before` and `::%after` - is in no DOM at all, yet it *is* in the
 accessibility tree and screen readers announce it; the `content: "★" / "star"`
 alternative-text syntax exists precisely because it is announced.
 

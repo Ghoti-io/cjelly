@@ -91,53 +91,6 @@ typedef enum CJellyApplicationError {
 
 
 /**
- * @brief Internal structure to store application configuration options.
- *
- * This structure holds both required and preferred constraints for Vulkan
- * context initialization. These include flags for validation, the required
- * Vulkan API version, GPU memory, and device type, along with separate lists
- * for required instance extensions and required device extensions.
- *
- * If a required option is not met, the application will fail to initialize.
- *
- * If a preferred option is not met, the application will still initialize.
- * Given a choice between multiple devices, the application will prefer the one
- * that meets the stated preferred options.
- *
- * @var enableValidation
- *  Indicates whether Vulkan validation layers are enabled.
- *
- * @var requiredVulkanVersion
- *  The Vulkan API version that is required or preferred.
- *
- * @var requiredGPUMemory
- *  The minimum amount of GPU memory that is required, in megabytes.
- *
- * @var requiredDeviceType
- *  The required device type (e.g., discrete or integrated).
- *
- * @var preferredDeviceType
- *  The preferred device type (e.g., discrete or integrated).
- *
- * @var requiredInstanceExtensions
- *  A dynamic array of names of instance extensions that are required.
- *
- * @var requiredInstanceExtensionCount
- *  The current number of required instance extensions.
- *
- * @var requiredInstanceExtensionCapacity
- *  The allocated capacity for the required instance extensions array.
- *
- * @var requiredDeviceExtensions
- *  A dynamic array of names of device extensions that are required.
- *
- * @var requiredDeviceExtensionCount
- *  The current number of required device extensions.
- *
- * @var requiredDeviceExtensionCapacity
- *  The allocated capacity for the required device extensions array.
- */
-/**
  * @brief One entry in an application's custom signal-handler list.
  *
  * Named so that a GCU_Array can carry it.  It used to be an anonymous struct
@@ -150,24 +103,38 @@ typedef struct CJellyApplicationSignalHandler {
   void * user_data;                              /**< Passed to @p handler. */
 } CJellyApplicationSignalHandler;
 
+/**
+ * @brief Internal structure to store application configuration options.
+ *
+ * This structure holds both required and preferred constraints for Vulkan
+ * context initialization. These include flags for validation, the required
+ * Vulkan API version, GPU memory, and device type, along with separate lists
+ * for required instance extensions and required device extensions.
+ *
+ * If a required option is not met, the application will fail to initialize.
+ *
+ * If a preferred option is not met, the application will still initialize.
+ * Given a choice between multiple devices, the application will prefer the one
+ * that meets the stated preferred options.
+ */
 typedef struct CJellyApplicationOptions {
-  uint32_t requiredVulkanVersion;
-  uint32_t requiredGPUMemory;
-  CJellyApplicationDeviceType requiredDeviceType;
-  CJellyApplicationDeviceType preferredDeviceType;
-  bool enableValidation;
+  uint32_t requiredVulkanVersion; /**< The Vulkan API version that is required. */
+  uint32_t requiredGPUMemory;     /**< The minimum GPU memory required, in megabytes. */
+  CJellyApplicationDeviceType requiredDeviceType;  /**< The required device type (e.g., discrete or integrated). */
+  CJellyApplicationDeviceType preferredDeviceType; /**< The preferred device type (e.g., discrete or integrated). */
+  bool enableValidation;          /**< Whether Vulkan validation layers are enabled. */
 
-  // Instance extensions (enabled during vkCreateInstance).  Elements are
-  // `char *`, each owned by the array; `data` is what vkCreateInstance wants
-  // for ppEnabledExtensionNames, so the contiguity is load-bearing.
-  //
-  // These were a pointer, a count and a capacity grown by hand.  The growth
-  // doubled `capacity`, so an array that ever reached this code with a
-  // capacity of zero would have grown to zero and written past the end; it
-  // was unreachable only because initialize_options() always allocated first.
+  /** Instance extensions (enabled during vkCreateInstance).  Elements are
+   *  `char *`, each owned by the array; `data` is what vkCreateInstance wants
+   *  for ppEnabledExtensionNames, so the contiguity is load-bearing.
+   *
+   *  These were a pointer, a count and a capacity grown by hand.  The growth
+   *  doubled `capacity`, so an array that ever reached this code with a
+   *  capacity of zero would have grown to zero and written past the end; it
+   *  was unreachable only because initialize_options() always allocated first. */
   GCU_Array requiredInstanceExtensions;
 
-  // Device extensions (enabled during vkCreateDevice).  Same arrangement.
+  /** Device extensions (enabled during vkCreateDevice).  Same arrangement. */
   GCU_Array requiredDeviceExtensions;
 } CJellyApplicationOptions;
 
@@ -179,103 +146,49 @@ typedef struct CJellyApplicationOptions {
  * its configuration options, the associated Vulkan instance, physical device,
  * logical device, command pools, debug messenger, and individual queue handles
  * for graphics, transfer, and compute operations.
- *
- * @var appName
- *  The name of the application.
- *
- * @var appVersion
- *  The version of the application.
- *
- * @var options
- *  The internal configuration options used during application initialization.
- *
- * @var instance
- *  The Vulkan instance handle.
- *
- * @var physicalDevice
- *  The selected physical device handle.
- *
- * @var logicalDevice
- *  The Vulkan logical device handle created from the selected physical device.
- *
- * @var graphicsCommandPool
- *  A Vulkan command pool used for allocating command buffers for graphics
- * operations.
- *
- * @var transferCommandPool
- *  A Vulkan command pool used for allocating command buffers for transfer
- * operations.
- *
- * @var computeCommandPool
- *  A Vulkan command pool used for allocating command buffers for compute
- * operations.
- *
- * @var vkContext
- *  The Vulkan context associated with the application.
- *
- * @var debugMessenger
- *  The Vulkan debug messenger handle, used for validation layers.
- *
- * @var graphicsQueue
- *  The Vulkan queue handle used for graphics (and presentation) operations.
- *
- * @var transferQueue
- *  The Vulkan queue handle used for transfer (data copy) operations.
- *
- * @var computeQueue
- *  The Vulkan queue handle used for compute operations.
- *
- * @var graphicsQueueFamilyIndex
- *  The queue family index used for graphics operations.
- *
- * @var transferQueueFamilyIndex
- *  The queue family index used for transfer operations.
- *
- * @var computeQueueFamilyIndex
- *  The queue family index used for compute operations.
  */
 struct CJellyApplication {
-  char * appName;
-  uint32_t appVersion;
-  CJellyApplicationOptions options;
-  VkInstance instance;
-  VkPhysicalDevice physicalDevice;
-  VkDevice logicalDevice;
-  VkCommandPool graphicsCommandPool;
-  VkCommandPool transferCommandPool;
-  VkCommandPool computeCommandPool;
-  CJellyVulkanContext * vkContext;
-  VkDebugUtilsMessengerEXT debugMessenger;
-  VkQueue graphicsQueue;
-  VkQueue transferQueue;
-  VkQueue computeQueue;
-  int graphicsQueueFamilyIndex;
-  int transferQueueFamilyIndex;
-  int computeQueueFamilyIndex;
-  bool supportsBindlessRendering;
+  char * appName;                     /**< The name of the application. */
+  uint32_t appVersion;                /**< The version of the application. */
+  CJellyApplicationOptions options;   /**< The configuration options used during initialization. */
+  VkInstance instance;                /**< The Vulkan instance handle. */
+  VkPhysicalDevice physicalDevice;    /**< The selected physical device handle. */
+  VkDevice logicalDevice;             /**< The logical device created from the selected physical device. */
+  VkCommandPool graphicsCommandPool;  /**< Command pool for graphics command buffers. */
+  VkCommandPool transferCommandPool;  /**< Command pool for transfer command buffers. */
+  VkCommandPool computeCommandPool;   /**< Command pool for compute command buffers. */
+  CJellyVulkanContext * vkContext;    /**< The Vulkan context associated with the application. */
+  VkDebugUtilsMessengerEXT debugMessenger; /**< The debug messenger handle, used for validation layers. */
+  VkQueue graphicsQueue;              /**< Queue used for graphics (and presentation) operations. */
+  VkQueue transferQueue;              /**< Queue used for transfer operations. */
+  VkQueue computeQueue;               /**< Queue used for compute operations. */
+  int graphicsQueueFamilyIndex;       /**< Queue family index used for graphics operations. */
+  int transferQueueFamilyIndex;       /**< Queue family index used for transfer operations. */
+  int computeQueueFamilyIndex;        /**< Queue family index used for compute operations. */
+  bool supportsBindlessRendering;     /**< Whether the selected device supports bindless rendering. */
 
-  // Window tracking (for future mutex protection when multi-threaded).
-  // Elements are `cj_window_t *` held as void*, so this stays an opaque list.
+  /** Window tracking (for future mutex protection when multi-threaded).
+   *  Elements are `cj_window_t *` held as void*, so this stays an opaque list. */
   GCU_Array windows;
 
-  // Handle mapping for event routing: platform handle (HWND, X11 Window) ->
-  // cj_window_t*. A cutil GCU_Hash64, held as void* so this header does not
-  // pull in cutil's; it was an array searched linearly, which meant every
-  // arriving event walked every open window.
+  /** Handle mapping for event routing: platform handle (HWND, X11 Window) ->
+   *  cj_window_t*. A cutil GCU_Hash64, held as void* so this header does not
+   *  pull in cutil's; it was an array searched linearly, which meant every
+   *  arriving event walked every open window. */
   void* handle_map;
 
-  // Signal handling
-  volatile sig_atomic_t shutdown_requested;  // Flag indicating shutdown was requested
-  void (*shutdown_callback)(CJellyApplication* app, void* user_data);  // Shutdown callback
-  void* shutdown_callback_user_data;  // User data for shutdown callback
+  /* Signal handling */
+  volatile sig_atomic_t shutdown_requested;  /**< Flag indicating shutdown was requested. */
+  void (*shutdown_callback)(CJellyApplication* app, void* user_data);  /**< Shutdown callback. */
+  void* shutdown_callback_user_data;  /**< User data for the shutdown callback. */
 
-  // Custom signal handlers.  Elements are CJellyApplicationSignalHandler;
-  // the struct is named rather than anonymous because a GCU_Array needs a
-  // sizeof, and because the old code had to cast through void* to assign to
-  // it at all.
+  /** Custom signal handlers.  Elements are CJellyApplicationSignalHandler;
+   *  the struct is named rather than anonymous because a GCU_Array needs a
+   *  sizeof, and because the old code had to cast through void* to assign to
+   *  it at all. */
   GCU_Array custom_signal_handlers;
 
-  bool signal_handlers_registered;  // Track if signal handlers have been registered
+  bool signal_handlers_registered;  /**< Whether signal handlers have been registered. */
 };
 
 
