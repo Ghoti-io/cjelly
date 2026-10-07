@@ -267,6 +267,18 @@ APP_DIR := $(BUILD_DIR)/apps
 ifeq ($(UNAME_S), Linux)
 	CFLAGS += `PKG_CONFIG_PATH=$(PKG_CONFIG_LOOKUP_PATH) pkg-config --cflags x11`
 	LDFLAGS += `PKG_CONFIG_PATH=$(PKG_CONFIG_LOOKUP_PATH) pkg-config --libs x11`
+	# XRandR is used for per-monitor DPI in platform/x11/window.c, gated on
+	# __has_include(<X11/extensions/Xrandr.h>). Link it only when pkg-config
+	# finds it: a runtime-only install (headers absent) compiles that arm out,
+	# and a machine with the -dev package has both the header and xrandr.pc.
+	# Keyed on LIBS, not CFLAGS - a header-only answer would compile and fail
+	# to link, which is the arm that rots unnoticed (see audio's HAVE_IMAGE).
+	XRANDR_CFLAGS := $(shell PKG_CONFIG_PATH=$(PKG_CONFIG_LOOKUP_PATH) pkg-config --cflags xrandr 2>/dev/null)
+	XRANDR_LIBS := $(shell PKG_CONFIG_PATH=$(PKG_CONFIG_LOOKUP_PATH) pkg-config --libs xrandr 2>/dev/null)
+	ifneq ($(strip $(XRANDR_LIBS)),)
+	CFLAGS += $(XRANDR_CFLAGS)
+	LDFLAGS += $(XRANDR_LIBS)
+	endif
 	# XInput2 (libXi) is optional - if not available, we fall back to traditional events
 	# For now, we'll skip linking libXi and make XInput2 optional at runtime
 	# This avoids linker issues - XInput2 functions will be called only if available
